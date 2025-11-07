@@ -18,6 +18,6 @@ public interface ActionsOwner extends Actions {
     /// public int[] viewSpecifications();
     public void startMaintenance();
     public void stopMaintenance();
-    public void getState();
+    public VendingMachineState getState();
 
 }

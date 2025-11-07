@@ -31,8 +31,8 @@ public class AdminProxy extends Observable implements ActionsOwner {
     public void stopMaintenance() {
         this.vendingMachine.changeState(VendingMachineState.IDLE);
     }
-    public void getState() {
-        this.event(this.vendingMachine.getState());
+    public VendingMachineState getState() {
+        return this.vendingMachine.getState();
     }
 
     //: Relating to coin storage.

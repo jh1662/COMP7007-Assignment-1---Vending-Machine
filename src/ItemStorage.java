@@ -20,6 +20,8 @@ public class ItemStorage {
     private ItemSlot findID(int iD, boolean toRefill){
         //* Finds appropriate based on item ID and intent to refill or dispense.
         for (ItemSlot slot : this.slots) {
+            if (slot == null){ continue; }
+            //^ No point checking unassigned slots; also avoids null pointer exception ('NullPointerException').
             if (slot.checkID(iD)){
                 if (toRefill){ if (!slot.isFull()){ return slot; } }
                 if (!slot.isEmpty()){ return slot; }

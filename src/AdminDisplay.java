@@ -70,10 +70,10 @@ public class AdminDisplay implements Observer {
         System.out.println(STR."Respective coin capacities: \{String.join(", ", coinMaxes.values().stream().map(String::valueOf).toList())}");
         //^ Stream converts coin capacities (values of map) to a list of display strings using 'String.valueOf' method.
 
-        //: immutable constant stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
+        //: mutable but frequent stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
+        System.out.println(STR."Current vending machine mode - \{((AdminProxy) o).getState().toString()}.");
         System.out.printf(((AdminProxy)o).viewCoins().toString());
         System.out.printf(Arrays.toString(((AdminProxy) o).viewItems()));
-        //^ 'arrayName.toString()' returns as identity hash, but Arrays.toString(arrayName) returns a human-readable string representation of the array contents; hence is used here.
 
         System.out.printf(formattedMessage);
         System.out.println("================================= ===================== =================================");

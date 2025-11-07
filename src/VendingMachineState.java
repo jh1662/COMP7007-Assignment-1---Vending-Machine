@@ -7,4 +7,6 @@ public enum VendingMachineState {
     DISPENSING, //< Dispensing items.
     REFUNDING, //< Refunding coins.
     MAINTENANCE, //< Admin/owner only - restocking items or coins, or performing maintenance.
+
+    //! No need a toString() method as enum's toString() is sufficient.
 }
