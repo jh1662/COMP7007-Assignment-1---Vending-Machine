@@ -1,20 +1,20 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Drink extends Item{
-    private final int volume;
-    //^ In ml units.
+public class Snack extends Item{
+    private final int weight;
+    //^ In grams.
 
-    public Drink(String name, int iD, double price, int volume) {
+    public Snack(String name, int iD, double price, int weight) {
         super(name, iD, price);
-        this.volume = volume;
+        this.weight = weight;
     }
 
     @Override
     public Map<String, String> render() {
         Map<String, String> details = new HashMap<>(super.render());
         //^ 'new HashMap<>' makes copy to allow appending more details.
-        details.put("volume", Integer.toString(this.volume));
+        details.put("weight", Integer.toString(this.weight));
         return details;
     }
 }

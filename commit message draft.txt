@@ -1,1 +1,0 @@
-Plan is done as documentation in README.md. Created some classes as a start and filled in conceptual code for the interfaces and enumeration.

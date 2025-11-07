@@ -1,5 +1,5 @@
 public enum CoinGBP {
-    ONE_PENCE(0.01),
+    ONE_PENNY(0.01),
     TWO_PENCE(0.02),
     //!^ Not listed in assessment brief but lecturer said that it does not matter.
     FIVE_PENCE(0.05),
@@ -19,8 +19,16 @@ public enum CoinGBP {
 
     @Override
     public String toString() {
-        //* Used to notify user what coins they inserted.
-        if (value < 1.0) { return String.format("%.0f pence coin", value * 100);}
-        else { return String.format("£%.0f coin", value); }
+        //* Used to notify user what coins they inserted or what coin is responsible for a thrown error.
+        return switch (this) {
+            case ONE_PENNY -> "one penny coin";
+            case TWO_PENCE -> "two pence coin";
+            case FIVE_PENCE -> "five pence coin";
+            case TEN_PENCE -> "ten pence coin";
+            case FIFTY_PENCE -> "fifty pence coin";
+            case ONE_POUND -> "one pound";
+            default -> "two pounds coin";
+            //^ All other enum values covered, hence default case corresponds to the 2 pound coin.
+        };
     }
 }
