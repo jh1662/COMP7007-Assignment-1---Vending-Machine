@@ -1,67 +1,82 @@
 import java.util.HashMap;
 
-void main() {
-    //* Example use.
-    //! Vigorous testing done in JUnit unit tests.
+/**
+ * Main class to demonstrate example use-case of the vending machine system.
+ * Testing is conducted through JUnit unit tests.
+ */
+public class Main {
+    /**
+     * Main method to run the example use-case.
+     * @param args Command-line arguments (not used).
+     */
+    public static void main(String[] args) {
+        //* Example use-case.
+        //! Vigorous testing done in JUnit unit tests.
 
-    VendingMachine vendingMachine = new VendingMachine(9, 10, new HashMap<CoinGBP, Integer>() {{
-        //! This specific machine starts with 50 of each coin but does not except penny as prices are multiples of 2p.
-        put(CoinGBP.TWO_PENCE, 50);
-        put(CoinGBP.FIVE_PENCE, 50);
-        put(CoinGBP.TEN_PENCE, 50);
-        put(CoinGBP.TWENTY_PENCE, 50);
-        put(CoinGBP.FIFTY_PENCE, 50);
-        put(CoinGBP.ONE_POUND, 30);
-        put(CoinGBP.TWO_POUNDS, 30);
-    }});
+        System.out.println("Starting example case");
 
-    AdminProxy adminProxy = new AdminProxy(vendingMachine);
-    vendingMachine.changeState(VendingMachineState.MAINTENANCE);
-    AdminDisplay[] adminDisplays = new AdminDisplay[]{new AdminDisplay(adminProxy, vendingMachine.viewSpecifications(), vendingMachine.getCoinMaxes())};
-    vendingMachine.changeState(VendingMachineState.IDLE);
+        ItemFactory itemFactory = ItemFactory.getInstance();
 
-    adminProxy.startMaintenance();
+        VendingMachine vendingMachine = new VendingMachine(9, 10, new HashMap<>() {{
+            //! This specific machine starts with 50 of each coin but does not except penny as prices are multiples of 2p.
+            put(CoinGBP.TWO_PENCE, 50);
+            put(CoinGBP.FIVE_PENCE, 50);
+            put(CoinGBP.TEN_PENCE, 50);
+            put(CoinGBP.TWENTY_PENCE, 50);
+            put(CoinGBP.FIFTY_PENCE, 50);
+            put(CoinGBP.ONE_POUND, 30);
+            put(CoinGBP.TWO_POUNDS, 30);
+        }});
 
-    adminProxy.viewCoins();
+        AdminProxy adminProxy = new AdminProxy(vendingMachine);
+        vendingMachine.changeState(VendingMachineState.MAINTENANCE);
+        AdminDisplay adminDisplays = new AdminDisplay(adminProxy, vendingMachine.viewSpecifications(), vendingMachine.getCoinMaxes());
+        vendingMachine.changeState(VendingMachineState.IDLE);
 
-    adminProxy.depositCoins(CoinGBP.TWO_PENCE, 20);
-    adminProxy.depositCoins(CoinGBP.FIVE_PENCE, 20);
-    adminProxy.depositCoins(CoinGBP.TEN_PENCE, 20);
-    adminProxy.depositCoins(CoinGBP.TWENTY_PENCE, 20);
-    adminProxy.depositCoins(CoinGBP.FIFTY_PENCE, 20);
-    adminProxy.depositCoins(CoinGBP.ONE_POUND, 15);
-    adminProxy.depositCoins(CoinGBP.TWO_POUNDS, 16);
+        adminProxy.startMaintenance();
 
-    adminProxy.viewCoins();
+        adminProxy.viewCoins();
 
-    adminProxy.withdrawCoins(CoinGBP.TWO_POUNDS, 1);
+        adminProxy.depositCoins(CoinGBP.TWO_PENCE, 20);
+        adminProxy.depositCoins(CoinGBP.FIVE_PENCE, 20);
+        adminProxy.depositCoins(CoinGBP.TEN_PENCE, 20);
+        adminProxy.depositCoins(CoinGBP.TWENTY_PENCE, 20);
+        adminProxy.depositCoins(CoinGBP.FIFTY_PENCE, 20);
+        adminProxy.depositCoins(CoinGBP.ONE_POUND, 15);
+        adminProxy.depositCoins(CoinGBP.TWO_POUNDS, 16);
 
-    adminProxy.viewCoins();
+        adminProxy.viewCoins();
 
-    adminProxy.viewItems();
+        adminProxy.withdrawCoins(CoinGBP.TWO_POUNDS, 1);
 
-    adminProxy.assignItemSlot(0, new Drink("Coke", 26, 1.50, 330));
-    adminProxy.assignItemSlot(1, new Drink("Coke", 26, 1.50, 330));
-    adminProxy.assignItemSlot(2, new Drink("water", 27, 1.00, 300));
-    adminProxy.assignItemSlot(2, new Drink("BBQ Sandwich", 28, 1.00, 200));
-    adminProxy.assignItemSlot(3, new Drink("BBQ Sandwich", 28, 1.00, 200));
+        adminProxy.viewCoins();
 
-    adminProxy.viewItems();
+        adminProxy.viewItems();
 
-    adminProxy.unassignItemSlot(3);
+        adminProxy.assignItemSlot(0, itemFactory.createItem(ItemType.DRINK, "Coke", 26, 1.50, 330));
+        adminProxy.assignItemSlot(1, itemFactory.createItem(ItemType.DRINK, "Coke", 26, 1.50, 330));
+        adminProxy.assignItemSlot(2, itemFactory.createItem(ItemType.DRINK, "Coke", 27, 1.00, 300));
+        adminProxy.assignItemSlot(3, itemFactory.createItem(ItemType.SNACK, "BBQ flavoured crisps", 28, 2.00, 22));
+        adminProxy.assignItemSlot(3, itemFactory.createItem(ItemType.SNACK, "BBQ flavoured crisps", 28, 2.00, 22));
 
-    adminProxy.viewItems();
+        adminProxy.viewItems();
 
-    adminProxy.stockItems(0, 10);
-    adminProxy.stockItems(1, 9);
-    adminProxy.stockItems(2, 10);
-    adminProxy.stockItems(3, 10);
+        adminProxy.unassignItemSlot(3);
 
-    adminProxy.viewItems();
+        adminProxy.viewItems();
 
-    adminProxy.removeItems(3, 1);
+        adminProxy.stockItems(0, 10);
+        adminProxy.stockItems(1, 9);
+        adminProxy.stockItems(2, 10);
 
-    adminProxy.viewItems();
+        adminProxy.stockItems(3, 10);
 
-    adminProxy.stopMaintenance();
+        adminProxy.viewItems();
+
+        adminProxy.removeItems(2, 1);
+
+        adminProxy.viewItems();
+
+        adminProxy.stopMaintenance();
+    }
 }

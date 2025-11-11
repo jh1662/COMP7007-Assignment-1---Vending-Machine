@@ -1,4 +1,10 @@
+/**
+ * States of the vending machine as part of the "state design pattern".
+ * <p>
+ * Description of each enum value is given as comments its scope.
+ */
 public enum VendingMachineState {
+
     //* Only stable states will be used - transient states will not be included
     //* as it cannot be simulated in current conditions.
     IDLE, //< No action done - waiting for new customer or admin.

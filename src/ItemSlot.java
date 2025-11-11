@@ -1,10 +1,23 @@
 import java.util.Map;
 
+/**
+ * "composite design pattern" class that represents a slot in the vending machine assigned to holds a specific item type.
+ * Stores the 'Item' class instance inside as the assigned item type.
+ * Instances of this class are stored in an array inside the 'ItemStorage' class.
+ * <p>
+ * Responsibility/purpose of each vending machine slot is delegated to each instance of this class.
+ */
 public class ItemSlot { //< Composite pattern class.
     private final int capacity;
     private final Item item;
     //^ Slot can change item but class will be re-instantiated instead of being mutated because of cleaner logic.
     private int itemCount;
+
+    /**
+     * Constructor for initializing the physical capacity and what item type the slots is assigned to hold.
+     * @param capacity Maximum number of items the slot can hold.
+     * @param item     The specific item type assigned to this slot.
+     */
     ItemSlot(int capacity, Item item) {
         this.capacity = capacity;
         this.item = item;
@@ -12,32 +25,86 @@ public class ItemSlot { //< Composite pattern class.
         //^ Slot must be assigned to an item before it can be populated.
     }
 
-    public String toString(int slotNum) { return "Slot #"+slotNum+this.item.toString()+"; stock at "+this.itemCount+". "; }
+    /*
+
+     * String representation of the specific slot of the vending machine.
+     * @param slotNum The slot number in the vending machine (for identification).
+     *                Class instance does not store its own slot number (the number is the index of 'ItemStorage.ItemSlot[]'), hence it is provided as an argument.
+     * @return String representation including slot number, item details, and current stock.
+
+    public String toString(int slotNum) { return STR."Slot #\{slotNum}\{this.item.toString()}; stock at \{this.itemCount}. "; }
     //^ Method overloading.
+    */
 
     //: Forwarder methods:
+    /**
+     * Forwarder method to 'this.item.getPrice' method.
+     * @return Price of the assigned item.
+     */
     public double getPrice(){ return this.item.getPrice(); }
+    /**
+     * Forwarder method to 'this.item.checkID' method.
+     * @param iD The unique identifier to check against the assigned item.
+     * @return 'true' if the assigned item's ID matches the provided ID; otherwise 'false'.
+     */
     public boolean checkID(int iD){ return this.item.checkID(iD); }
+    /**
+     * Forwarder method to 'this.item.getID' method.
+     * @return The unique identifier of the assigned item.
+     */
     public int getID(){ return this.item.getID(); }
+    /**
+     * Getter method for 'this.itemCount'.
+     * @return Number of items currently in the slot.
+     */
+    public int getStock(){ return this.itemCount; }
 
     //: predicate methods
-    public boolean isEmpty(){ return this.capacity == 0; }
-    public boolean isFull(){ return this.capacity == this.itemCount; }
-
-    public int getStock(){ return this.itemCount; }
-    //^ Getter method for current stock.
+    /**
+     * Predicate method to check if the slot is empty - have no items.
+     * <p>
+     * Not related to whether the slot is assigned to an item or not.
+     * @return 'true' if the slot has zero items; otherwise 'false'.
+     */
+    public boolean isEmpty(){ return this.itemCount == 0; }
+    /**
+     * Predicate method to check if the slot is full - have maximum items.
+     * <p>
+     * Not related to whether the slot is assigned to an item or not.
+     * @return 'true' if the slot has reached its capacity; otherwise 'false'.
+     */
+    public boolean isFull(){ return this.itemCount == this.capacity; }
 
     //: Owner/admin or customer (customer remove only), one can only physically add or remove one item at a time.
+    /**
+     * Adds one item to the slot.
+     * Triggered only by an admin/owner stocking the vending machine in MAINTENANCE mode.
+     * <p>
+     * Not directly relevant to whether the slot is assigned to an item or not.
+     * @throws IllegalArgumentException if the slot is already empty.
+     */
+    public void addItem(){
+        if (this.itemCount == this.capacity){ throw new IllegalArgumentException("Slot is full"); }
+        this.itemCount++;
+    }
+    /**
+     * Removes one item from the slot.
+     * Can be triggered by either a customer purchasing an item or an admin/owner dispensing broken or expired item for maintenance.
+     * <p>
+     * Not directly relevant to whether the slot is assigned to an item or not.
+     * @throws IllegalArgumentException if the slot is already empty.
+     */
     public void removeItem(){
         //^ Remove the physical item, not the assignment.
         if (this.itemCount == 0){ throw new IllegalArgumentException("Slot is empty"); }
         this.itemCount--;
     }
-    public void addItem(){
-        if (this.itemCount == this.capacity){ throw new IllegalArgumentException("Slot is full"); }
-        this.itemCount++;
-    }
 
+    /**
+     * Expands upon the assigned item's render method ('Item.render') by adding current stock detail.
+     * @return Map of the assigned item's details along with the current stock.
+     *         If a slot is unassigned (item is null), returns null.
+     */
     public Map<String, String> render() {
         //* Expects either a map or null.
         if (this.item == null){ return null; }

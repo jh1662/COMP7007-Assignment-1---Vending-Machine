@@ -1,0 +1,6 @@
+> decorator for items?
+> factory for vending machines?
+> too many VM states?
+> too much '.render().get' calls?
+> replace "..."
+> teach how to extend observer pattern

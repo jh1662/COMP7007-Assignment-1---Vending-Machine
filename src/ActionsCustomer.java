@@ -1,14 +1,15 @@
-public interface ActionsCustomer extends Actions {
+public interface ActionsCustomer {
 
     //: Payment and ordering actions
     //! depositCoins is inherited from Actions
-    public void selectItem();
-    public void deselectItem();
-    public void checkout();
-    public void cancelOrder();
+    void selectItem();
+    void deselectItem();
+    void checkout();
+    void cancelOrder();
+    void depositCoins(CoinGBP coin, int amount);
 
     //: Getters
-    public void GetBasket();
-    public void GetItemStock();
+    void GetBasket();
+    void GetItemStock();
     //^ Views all offered items and their corresponding stock.
 }

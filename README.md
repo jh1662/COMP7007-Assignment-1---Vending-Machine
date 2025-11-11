@@ -14,6 +14,7 @@ Due to the complexity of the assignment brief's requirements, they are divided i
 | Action logging and testing                 | Command Pattern     | Behavioral | Enables audit/test simulation                  |
 
 ## Code design choices
+Code comments
 ### Paying with different coins
 The best design pattern for the coin pattern would be the strategy pattern but due to coins being a fixed data type, instead of being behavioral, enumeration is better suited.
 
@@ -30,8 +31,31 @@ To Enforce Single Responsibility Principle (SRP), a separate class (stored in th
 In a vending machine, more than one item slot can hold the same item kind (used for more popular items). This makes Maps unsuitable as the item class cannot be the key and neither will just Arrays because they cannot hold more than one data type - cannot hold item object and its amount in one sub-array. To get around this, composite pattern is used where each object stored the item and data and behaviour, allowing the slots to be stored in a simple final array.
 ### this.[]
 
+### observer
+
+### loose? coupling - responsibility delegation
+
+### Java's built-in observer/observable
+
+### println over printf
+
+### vending dont know item
+
 ### Handling payment
 Due to being required for customer to be refunded/given back his/her coins if needed, coin storage and coin payment/refund are required to be separate component classes (enforces SRP).
+
+### Factory method over abstract factory
+While abstract factory pattern is more powerful than factory method pattern, the vending machine only requires one family of items (drinks and snacks). Therefore, the factory method pattern is more suited as it is
+### Polymorphism over genetics
+
+### Admin loops
+
+### testing via commands
+
+### Responsibility and importance of proxies
+
+### Admin and customer separation (no common interface)
+
 ## Coding fundamentals
 - Encapsulation: well covered across all components.
 - Abstraction: achieved via interfaces/abstract classes for State, Item, Command, Proxy, Observer.
