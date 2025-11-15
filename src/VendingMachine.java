@@ -4,9 +4,6 @@ import java.util.Map;
  * VendingMachine class that represents the vending machine itself - item and coin storage, state management, and operations.
  * Methods are not actions, actions are handled by proxy classes.
  * <p>
- * The author cannot stress enough that the Single Responsibility Principle makes the vending machine class to not handle actions - it only handles operations.
- * Balance, basket, handling repeating operation calls (e.g. depositing 50 pence coin 3 times), and other action-related tasks are handled by the proxy classes.
- * <p>
  * "state design pattern" class managing different states of the vending machine, such as IDLE, PAYING, MAINTENANCE, etc.
  * Used for controlling the behavior of the vending machine based on its current state and who is using it (admin/owner or customer).
  * <p>
@@ -16,7 +13,7 @@ public class VendingMachine {
     private VendingMachineState state;
     private final ItemStorage itemStorage;
     private final CoinStorage coinStorage;
-    //! listeners (for displays) are handled by proxies (hence are not stored here).
+    //! listeners (for displays) handled by proxies.
     //! There is no (customer) balance field here as it is handles by the customer proxy class.
 
     /**

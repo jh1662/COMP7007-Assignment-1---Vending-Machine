@@ -6,7 +6,7 @@ public interface ActionsCustomer {
     void deselectItem();
     void checkout();
     void cancelOrder();
-    void depositCoins(CoinGBP coin);
+    void depositCoins(CoinGBP coin, int amount);
 
     //: Getters
     void GetBasket();
