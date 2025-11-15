@@ -56,6 +56,10 @@ While abstract factory pattern is more powerful than factory method pattern, the
 
 ### Admin and customer separation (no common interface)
 
+### Simplistic Vending Machine capabilities assumption
+
+### Handling errors
+
 ## Coding fundamentals
 - Encapsulation: well covered across all components.
 - Abstraction: achieved via interfaces/abstract classes for State, Item, Command, Proxy, Observer.
