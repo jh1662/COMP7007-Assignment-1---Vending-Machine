@@ -1,3 +1,9 @@
+/**
+ * Enum representing various denominations of British Pound coins.
+ * Each coin has an associated monetary value.
+ * <p>
+ * Note that comment thought the code repository, The different coins are referred to as coin "types" in some places and coin "denominations" in others; both terms refer to the same thing.
+ */
 public enum CoinGBP {
     ONE_PENNY(0.01),
     TWO_PENCE(0.02),
@@ -11,12 +17,23 @@ public enum CoinGBP {
 
     private final double value;
 
+    /**
+     * Constructor assigns double representation of the item type for balance calculations.
+     */
     CoinGBP(double value) { this.value = value; }
     //^ Assigns money value (double) to each coin (final constant).
 
+    /**
+     * Getter method for 'this.value'.
+     * @return Monetary value of the coin.
+     */
     public double getValue() { return value; }
     //^ Used for calculating/adding to vending machine balance.
 
+    /**
+     * Overrides default toString method to provide user-friendly string representation.
+     * @return String representation of the coin denomination.
+     */
     @Override
     public String toString() {
         //* Used to notify user what coins they inserted or what coin is responsible for a thrown error.

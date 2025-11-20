@@ -58,6 +58,11 @@ public class ItemSlot { //< Composite pattern class.
      * @return Number of items currently in the slot.
      */
     public int getStock(){ return this.itemCount; }
+    /**
+     * Getter method for 'this.item'.
+     * @return The assigned item in the slot; can be null if unassigned.
+     */
+    public Item getItem(){ return this.item; }
 
     //: predicate methods
     /**

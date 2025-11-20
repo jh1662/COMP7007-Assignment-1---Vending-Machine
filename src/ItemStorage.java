@@ -10,6 +10,9 @@ import java.awt.*;
  * Admin/owner is responsible for ensuring correct items are stocked in the correct slots.
  * <p>
  * Responsibility/purpose of vending machine's item storage and its logistics are delegated to this class.
+ * <p>
+ * Just like vending machine, item storage only handles physical operations and viewing status, not actions that require a series of operations to maintain SRP.
+ * For example, instead of having a 'getItemCount' method for the customer proxy, it has a 'render' method (used by multiple proxies) that returns the current state of all slots where the customer proxy uses to calculate total item count.
  */
 public class ItemStorage {
     private final int maxAmount;
@@ -121,6 +124,7 @@ public class ItemStorage {
         if (slot == null){ throw new IllegalArgumentException("Item not found or out of stock."); }
         slot.removeItem();
     }
+
     //: Admin/owner only - assign or unassign entire slot from/to vending machine.
     /**
      * Assigns a slot from the vending machine.

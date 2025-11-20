@@ -46,9 +46,9 @@ public class AdminDisplay implements Observer {
             //* Enhanced switch statement for better readability.
             case "IllegalArgumentException" -> this.display(o, "INVALID OPERATION - " + ((IllegalArgumentException) message).getMessage());
             case "IllegalStateException" -> this.display(o, "INVALID STATE - " + ((IllegalStateException) message).getMessage());
-            case "HashMap<CoinGBP, Integer>" -> this.display(o, "CURRENT COIN STORAGE - " + message.toString());
-            case "HashMap<Item, Integer>[]" -> this.display(o, "CURRENT ITEM STORAGE BY SLOTS - " + message.toString());
-            case "VendingMachineState" -> this.display(o, "CURRENT VENDING MACHINE STATE - " + message.toString());
+            /// case "HashMap<CoinGBP, Integer>" -> this.display(o, "CURRENT COIN STORAGE - " + message.toString());
+            /// case "HashMap<Item, Integer>[]" -> this.display(o, "CURRENT ITEM STORAGE BY SLOTS - " + message.toString());
+            /// case "VendingMachineState" -> this.display(o, "CURRENT VENDING MACHINE STATE - " + message.toString());
             default ->  this.display(o, "NOTICE - " + message.toString());
             //^ Default case for String, int, etc; being default case, it also tackles external errors.
         }
@@ -73,23 +73,33 @@ public class AdminDisplay implements Observer {
      * @param o The observable object (AdminProxy) providing the vending machine data.
      */
     public void display(Observable o, String formattedMessage) {
-        System.out.println("================================= ADMIN CONSOLE DISPLAY =================================");
+
+        StringBuilder consoleInterface = new StringBuilder();
+        //^ Using StringBuilder to accumulate the console output before printing.
+        //^ This approach is more efficient building string with multiple lines than printing multiple strings.
+        //^ Also is simpler to modify later if extensibility needed (e.g., redirecting output to a logging file).
+
+        consoleInterface.append("================================= ADMIN CONSOLE DISPLAY =================================\n");
         //: immediate and frequent constant stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
-        System.out.println(STR."Current Vending Machine specifications: max slots - \{this.maxSlots}, max items per slot - \{this.maxItemsPerSlot}.");
+        consoleInterface.append(STR."Current Vending Machine specifications: max slots - \{this.maxSlots}, max items per slot - \{this.maxItemsPerSlot}.\n");
         //^ Using 'STR' is much simpler and compact than using 'String.format' or concatenation for more than 2 concatenating components.
-        System.out.println(STR."Accepted coin types -  \{String.join(", ", coinMaxes.keySet().stream().map(CoinGBP::toString).toList())}.");
+        consoleInterface.append(STR."Accepted coin types -  \{String.join(", ", coinMaxes.keySet().stream().map(CoinGBP::toString).toList())}.\n");
         //^ '.stream()' is a single-line simple alternative to traditional 'for' loops for transforming collections; hence is used.
         //^ Stream converts CoinGBP[] coin kinds (keys of map) to a list of display strings using 'CoinGBP.toString' method.
-        System.out.println(STR."Respective coin capacities - \{String.join(", ", coinMaxes.values().stream().map(String::valueOf).toList())}");
+        consoleInterface.append(STR."Respective coin capacities - \{String.join(", ", coinMaxes.values().stream().map(String::valueOf).toList())}\n");
         //^ Stream converts coin capacities (values of map) to a list of display strings using 'String.valueOf' method.
 
         //: mutable but frequent stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
-        System.out.println(STR."Current vending machine mode - \{((AdminProxy) o).getState().toString()}.");
-        System.out.println(STR."Current coin storage - \{((AdminProxy)o).viewCoins().toString()}.");
-        System.out.println(STR."Current item slot storage: \{Arrays.stream(((AdminProxy) o).viewItems()).map(it -> it == null ? "null" : it.render()).reduce((a, b) -> a + ", " + b).orElse("")}.");
+        consoleInterface.append(STR."Current vending machine mode - \{((AdminProxy) o).getState().toString()}.\n");
+        consoleInterface.append(STR."Current coin storage - \{((AdminProxy)o).viewCoins().toString()}.\n");
+        consoleInterface.append(STR."Current item slot storage: \{Arrays.stream(((AdminProxy) o).viewItems()).map(it -> it == null ? "null" : it.render()).reduce((a, b) -> a + ", " + b).orElse("")}.\n");
         //^ Stream converts ItemSlot[] to a single string by mapping each slot to its rendered details or 'null' if slot is unassigned.
 
-        System.out.println(formattedMessage);
-        System.out.println("================================= ===================== =================================");
+        consoleInterface.append(formattedMessage + "\n");
+        //^ Not worth using 'STR' here as only 2 component are concatenated.
+        consoleInterface.append("================================= ===================== =================================\n");
+
+        System.out.print(consoleInterface);
+        //^ Print the entire console output at once for better performance.
     }
 }

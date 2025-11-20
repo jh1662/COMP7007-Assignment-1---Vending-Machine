@@ -50,6 +50,16 @@ public class AdminProxy extends Observable implements ActionsAdmin {
     }
     */
 
+    private boolean inMaintenanceMode() {
+        //* Better readability for method to be called 'inMaintenanceMode', with the logical NOT operator, than 'inNotMaintenanceMode'.
+        boolean inMaintenanceMode = this.vendingMachine.getState() == VendingMachineState.MAINTENANCE;
+        if (!inMaintenanceMode) {
+            this.event(new IllegalStateException("Vending machine is not in maintenance mode. Cannot perform admin actions (except entering and exiting maintenance mode)."));
+            return false;
+        }
+        return true;
+    }
+
     //: Most important actions - actually starting/stopping maintenance mode.
     /**
      * Caller method that starts maintenance mode on the vending machine.
@@ -60,9 +70,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      * See corresponding superclass's method documentation for more information.
      */
     @Override
-    public void startMaintenance() {
-        this.vendingMachine.changeState(VendingMachineState.MAINTENANCE);
-    }
+    public void startMaintenance() { this.vendingMachine.changeState(VendingMachineState.MAINTENANCE); }
     /**
      * Caller method that ends maintenance mode on the vending machine.
      * <p>
@@ -88,7 +96,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
     @Override
     public VendingMachineState getState() {
         return this.vendingMachine.getState();
-    }
+    } //! make private...
 
     //: Relating to coin storage.
     /**
@@ -104,6 +112,8 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void depositCoins(CoinGBP coin, int amount) {
+        if(this.inMaintenanceMode()) { return; }
+
         this.event(STR."Depositing \{amount} \{coin.toString()}(s)..");
         try {
             for (int i = 0; i < amount; i++) {
@@ -131,6 +141,8 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void withdrawCoins(CoinGBP coin, int amount) {
+        if(this.inMaintenanceMode()) { return; }
+
         this.event(STR."Withdrawing \{amount} \{coin.toString()}(s)..");
         try {
             for (int i = 0; i < amount; i++) {

@@ -34,6 +34,7 @@ In a vending machine, more than one item slot can hold the same item kind (used 
 ### observer
 
 ### loose? coupling - responsibility delegation
+.render
 
 ### Java's built-in observer/observable
 
@@ -55,6 +56,8 @@ While abstract factory pattern is more powerful than factory method pattern, the
 ### Responsibility and importance of proxies
 
 ### Admin and customer separation (no common interface)
+
+### External error potential
 
 ## Coding fundamentals
 - Encapsulation: well covered across all components.

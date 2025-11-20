@@ -2,11 +2,11 @@ public interface ActionsCustomer {
 
     //: Payment and ordering actions
     //! depositCoins is inherited from Actions
-    void selectItem();
-    void deselectItem();
+    void selectItem(int itemID);
+    void deselectItem(int itemID);
     void checkout();
     void cancelOrder();
-    void depositCoins(CoinGBP coin);
+    void depositCoin(CoinGBP coin);
 
     //: Getters
     void GetBasket();
