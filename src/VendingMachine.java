@@ -32,13 +32,6 @@ public class VendingMachine {
         this.state = VendingMachineState.IDLE;
         this.itemStorage = new ItemStorage(slotSize, maxSlots);
         this.coinStorage = new CoinStorage(coinStorage);
-
-        //: Validation.
-        if (slotSize <= 0) { throw new IllegalArgumentException("Slot size must be greater than 0"); }
-        if (maxSlots <= 0) { throw new IllegalArgumentException("number of slots must be greater than 0"); }
-        //^ same validation as 'slotSize', but required to be different to allow admin/owner to easily debug/find the reason for vending machine creation failure.
-        if (coinStorage.values().stream().allMatch(capacity -> capacity < 0)) { throw new IllegalArgumentException(" All coin types must have a capacity greater than 0"); }
-        //^ Steam iterates via each key-value map to make sure all capacities are greater than 0.
     }
 
     //: State management methods.
@@ -51,12 +44,15 @@ public class VendingMachine {
         //* Implementation for changing the state of the vending machine.
         //* Message intended for admin/owner.
         if (!(this.state == VendingMachineState.IDLE) && newState == VendingMachineState.MAINTENANCE) {
+            //* Indentation used instead as single-line is too long
             throw new IllegalStateException("Cannot enter MAINTENANCE mode when not in IDLE state");
         }
         this.state = newState;
     }
     /**
      * Gets current state to help proxy classes determine allowed actions.
+     * <p>
+     * Called in the user role proxies (AdminProxy and CustomerProxy) to determine allowed actions based on current state.
      * @return The current state of the vending machine.
      */
     public VendingMachineState getState() {
@@ -104,10 +100,8 @@ public class VendingMachine {
      * @throws IllegalStateException if the vending machine is not in MAINTENANCE state.
      */
     public Map<CoinGBP, Integer> getCoinStorage() {
-        if (this.state != VendingMachineState.MAINTENANCE) {
-            //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot view coin storage when not in MAINTENANCE state");
-        }
+        if (this.state != VendingMachineState.MAINTENANCE) throw new IllegalStateException("Cannot view coin storage when not in MAINTENANCE state");
+        //^ Would only be satisfied when owner/admin is not in maintenance mode.
         return this.coinStorage.getCoinCounts();
     }
     /**
@@ -116,13 +110,14 @@ public class VendingMachine {
      * Used for returning unaccepted coins when coin stock is too full or is unsupported by the vending machine instance.
      * Used for admin/owner withdrawing coins or customer refunding coins - can be called from both proxies.
      * @param coin The coin to be withdrawn.
-     * @throws IllegalStateException if the vending machine is not in PAYING or MAINTENANCE state.
+     * @throws IllegalStateException if the vending machine is not in REFUNDING or MAINTENANCE state.
      */
     public void withdrawCoin(CoinGBP coin) {
         //* Implementation for returning unaccepted coins when coin stock is too full or is unsupported by the vending
         //* machine instance.
-        if (state != VendingMachineState.PAYING && state != VendingMachineState.MAINTENANCE) {
-            throw new IllegalStateException("Cannot withdraw coin when not in PAYING or MAINTENANCE state");
+        if (state != VendingMachineState.REFUNDING && state != VendingMachineState.MAINTENANCE) {
+            //^ REFUNDING for customer refunding coins or getting change; MAINTENANCE for admin/owner withdrawing coins for revenue (and not letting the capacity fill up).
+            throw new IllegalStateException("Cannot withdraw coin when not in REFUNDING or MAINTENANCE state");
         }
         this.coinStorage.withdraw(coin);
     }
@@ -157,7 +152,7 @@ public class VendingMachine {
     public ItemSlot[] getItemStorage() {
         if (this.state != VendingMachineState.MAINTENANCE && this.state != VendingMachineState.ORDERING) {
             //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot view item storage when not in MAINTENANCE state");
+            throw new IllegalStateException("Cannot view item storage when not in MAINTENANCE or ORDERING state");
         }
         return this.itemStorage.render();
     }
@@ -165,17 +160,16 @@ public class VendingMachine {
      * Stocks an item in the vending machine by item ID.
      * <p>
      * Used for restocking items by admin/owner only.
-     * @param iD The ID of the item to be restocked.
+     * @param slotNum The ID of the item slot to be restocked.
      * @throws IllegalStateException if the vending machine is not in MAINTENANCE state.
      */
-    public void stockItem(int iD) {
+    public void stockItem(int slotNum) {
         //* Implementation for restocking item by item ID.
         //* Used for admin/owner restocking items only.
-        if (state != VendingMachineState.MAINTENANCE) {
-            //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot restock item when not in MAINTENANCE state");
-        }
-        this.itemStorage.restockItem(iD);
+        if (state != VendingMachineState.MAINTENANCE) throw new IllegalStateException("Cannot restock item when not in MAINTENANCE state");
+        //^ Would only be satisfied when owner/admin is not in maintenance mode.
+
+        this.itemStorage.restockItem(slotNum);
     }
     /**
      * Dispenses an item from the vending machine by item ID.
@@ -189,7 +183,7 @@ public class VendingMachine {
         //* Used for dispensing item to customer or admin/owner taking out expired items.
         if (state != VendingMachineState.DISPENSING && this.state != VendingMachineState.MAINTENANCE) {
             //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot dispense item when not in DISPENSING state");
+            throw new IllegalStateException("Cannot dispense item when not in DISPENSING or MAINTENANCE state");
             //^ Customer message.
         }
         this.itemStorage.dispenseItem(iD, this.state == VendingMachineState.MAINTENANCE);
@@ -205,10 +199,9 @@ public class VendingMachine {
     public void assignSlot(int slotNum, Item item){
         //* Implementation for assigning an item slot to an item.
         //* Used for admin/owner assigning item slots.
-        if (state != VendingMachineState.MAINTENANCE) {
-            //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot assign item slot when not in MAINTENANCE state");
-        }
+        if (state != VendingMachineState.MAINTENANCE) throw new IllegalStateException("Cannot assign item slot when not in MAINTENANCE state");
+        //^ Would only be satisfied when owner/admin is not in maintenance mode.
+
         this.itemStorage.assignSlot(slotNum, item);
     }
     /**
@@ -221,10 +214,9 @@ public class VendingMachine {
     public void unassignSlot(int slotNum){
         //* Implementation for unassigning an item slot to an item.
         //* Used for admin/owner unassigning item slots.
-        if (state != VendingMachineState.MAINTENANCE) {
-            //* Would only be satisfied when owner/admin is not in maintenance mode.
-            throw new IllegalStateException("Cannot unassign item slot when not in MAINTENANCE state");
-        }
+        if (state != VendingMachineState.MAINTENANCE) throw new IllegalStateException("Cannot unassign item slot when not in MAINTENANCE state");
+        //^ Would only be satisfied when owner/admin is not in maintenance mode.
+
         this.itemStorage.unassignSlot(slotNum);
     }
 }

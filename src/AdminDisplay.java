@@ -46,24 +46,10 @@ public class AdminDisplay implements Observer {
             //* Enhanced switch statement for better readability.
             case "IllegalArgumentException" -> this.display(o, "INVALID OPERATION - " + ((IllegalArgumentException) message).getMessage());
             case "IllegalStateException" -> this.display(o, "INVALID STATE - " + ((IllegalStateException) message).getMessage());
-            /// case "HashMap<CoinGBP, Integer>" -> this.display(o, "CURRENT COIN STORAGE - " + message.toString());
-            /// case "HashMap<Item, Integer>[]" -> this.display(o, "CURRENT ITEM STORAGE BY SLOTS - " + message.toString());
-            /// case "VendingMachineState" -> this.display(o, "CURRENT VENDING MACHINE STATE - " + message.toString());
             default ->  this.display(o, "NOTICE - " + message.toString());
             //^ Default case for String, int, etc; being default case, it also tackles external errors.
         }
     }
-
-    /*
-    public String coinsToString(Map<CoinGBP, Integer> coinMap) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Coin Storage Status:\n");
-        for (Map.Entry<CoinGBP, Integer> entry : coinMap.entrySet()) {
-            sb.append(String.format(" - %s: %d/%d\n", entry.getKey(), entry.getValue(), coinMaxes.get(entry.getKey())));
-        }
-        return sb.toString();
-    }
-    */
 
     /**
      * Displays the current vending machine specifications and a formatted message.
@@ -72,7 +58,7 @@ public class AdminDisplay implements Observer {
      * @param formattedMessage The primary information to be displayed to the admin/owner.
      * @param o The observable object (AdminProxy) providing the vending machine data.
      */
-    public void display(Observable o, String formattedMessage) {
+    private void display(Observable o, String formattedMessage) {
 
         StringBuilder consoleInterface = new StringBuilder();
         //^ Using StringBuilder to accumulate the console output before printing.
@@ -91,9 +77,13 @@ public class AdminDisplay implements Observer {
 
         //: mutable but frequent stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
         consoleInterface.append(STR."Current vending machine mode - \{((AdminProxy) o).getState().toString()}.\n");
-        consoleInterface.append(STR."Current coin storage - \{((AdminProxy)o).viewCoins().toString()}.\n");
-        consoleInterface.append(STR."Current item slot storage: \{Arrays.stream(((AdminProxy) o).viewItems()).map(it -> it == null ? "null" : it.render()).reduce((a, b) -> a + ", " + b).orElse("")}.\n");
-        //^ Stream converts ItemSlot[] to a single string by mapping each slot to its rendered details or 'null' if slot is unassigned.
+        if (((AdminProxy) o).getState() == VendingMachineState.MAINTENANCE){
+            //: mutable but frequent stats - admin/owner would always want to see these every time vending machine is in MAINTENANCE mode.
+            consoleInterface.append(STR."Current coin storage - \{((AdminProxy)o).viewCoins().toString()}.\n");
+            consoleInterface.append(STR."Current item slot storage: \{Arrays.stream(((AdminProxy) o).viewItems()).map(it -> it == null ? "null" : it.render()).reduce((a, b) -> a + ", " + b).orElse("")}.\n");
+            //^ Stream converts ItemSlot[] to a single string by mapping each slot to its rendered details or 'null' if slot is unassigned.
+        }
+        else consoleInterface.append("Must be in maintenance mode to view mutable (changeable) vending machine stats for security reasons.\n");
 
         consoleInterface.append(formattedMessage + "\n");
         //^ Not worth using 'STR' here as only 2 component are concatenated.

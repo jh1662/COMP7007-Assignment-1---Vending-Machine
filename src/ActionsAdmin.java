@@ -1,10 +1,11 @@
 import java.util.Map;
 
-    /**
-     * Proxy interface defining administrative actions for managing a vending machine.
-     * <p>
-     * Any role with administrative privileges must implement this interface to perform maintenance tasks.
-     */
+/**
+ * Proxy interface defining administrative actions for managing a vending machine.
+ * <p>
+ * Any role with administrative privileges must implement this interface to perform maintenance tasks.
+ * <p> Non-void methods are considered informational (getter) actions called by the observers meaning that they are only indirectly tied to the actions of the admin role.
+ */
 public interface ActionsAdmin {
 
     //: Relating to coin storage.
@@ -34,8 +35,6 @@ public interface ActionsAdmin {
     void withdrawCoins(CoinGBP coin, int amount);
     /**
      * Views all supported coin types in the vending machine's coin storage.
-     * <p>
-     * One of the actions of the coin storage part of the administrative vending machine maintenance tasks.
      * @return Map containing each coin denomination (key) and its respective current count (value) in the coin storage.
      */
     Map<CoinGBP, Integer> viewCoins();
@@ -94,14 +93,11 @@ public interface ActionsAdmin {
     void unassignItemSlot(int slotNum);
     /**
      * Views all item slots in the vending machine's item storage.
-     * <p>
-     * One of the actions of the item storage part of the administrative vending machine maintenance tasks.
      * @return All slot representations in the vending machine's item storage; this includes the empty ones which are represented by 'null'.
      */
     ItemSlot[] viewItems();
 
     //: Relating to vending machine itself.
-    /// public int[] viewSpecifications();
     /**
      * Starts maintenance mode on the vending machine.
      * Without this, no administrative maintenance actions can be performed on the vending machine.
@@ -122,13 +118,4 @@ public interface ActionsAdmin {
      * Such unexpected situation could be when the customer expecting coin refunds, as change/leftover money from a purchase, but the physical mechanisms are jammed (i.e. external errors).
      */
     void stopMaintenance();
-    /**
-     * Gets the current state of the vending machine.
-     * <p>
-     * One of the informational (getter) actions of the administrative vending machine maintenance tasks but is also critical.
-     * Is critical to prevent invalid actions from causing unexpected behaviour in the vending machine.
-     * @return The current state of the vending machine.
-     */
-    VendingMachineState getState();
-
 }

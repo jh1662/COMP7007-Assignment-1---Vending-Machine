@@ -40,6 +40,11 @@ public abstract class Item {
      */
     public int getID() { return iD; }
     //^ For finding duplicate iDs in item storage.
+    /**
+     * Gets the name of item. The item factory ensures that the name is valid upon creation.
+     * @return name - non-null String that cannot be empty/blank of exceed 30 characters long .
+     */
+    public String getName() { return name; }
 
     /**
      * Checks if the provided ID matches the item's ID.

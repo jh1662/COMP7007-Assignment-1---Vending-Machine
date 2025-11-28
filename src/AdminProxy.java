@@ -18,20 +18,10 @@ import java.util.Observable;
  * Actions are implemented following the 'ActionsAdmin' contract; hence refer to that interface for deeper method documentations.
  */
 public class AdminProxy extends Observable implements ActionsAdmin {
-    /// private final DisplayListener[] displayListeners;
     private final VendingMachine vendingMachine;
 
     /**
-     * Constructor initializes which vending machine to be managed.
-     * @param vendingMachine The vending machine instance reference that this admin proxy will manage using maintenance actions.
-     */
-    public AdminProxy(VendingMachine vendingMachine) {
-        /// this.displayListeners = displayListeners;
-        this.vendingMachine = vendingMachine;
-    }
-
-    /**
-     * Helper method to notify all observers of an event.
+     * Observable-specific helper method to notify all observers of an event.
      * @param obj The event object to be sent to all observers to be display.
      *            Uses polymorphism by passing different types from Maps to thrown exceptions.
      *            Polymorphism is handled by the observer's 'update' method by using 'getClass().getSimpleName()' checks in an enhanced switch.
@@ -43,13 +33,27 @@ public class AdminProxy extends Observable implements ActionsAdmin {
         //^ from the 'Observable' superclass - if this object has changed, which it has in this scope as indicated by
         //^ the 'setChanged' method, then notify all of its observers.
     }
-    /*
-    public <T> void event(T message) {
-        //* Implementation for sending messages to display listeners.
-        for (DisplayListener listener : this.displayListeners) { listener.listen(message); }
-    }
-    */
 
+    /**
+     * Constructor initializes which vending machine to be managed.
+     * @param vendingMachine The vending machine instance reference that this admin proxy will manage using maintenance actions.
+     */
+    public AdminProxy(VendingMachine vendingMachine) {
+        this.vendingMachine = vendingMachine;
+    }
+
+    /**
+     * Utility helper method to check if the vending machine is in maintenance mode.
+     * <p>
+     * Notifies observers (such as 'AdminDisplay') if the vending machine is in maintenance mode or not.
+     * <p>
+     * Used by all admin actions except 'getState', 'getCoins', 'startMaintenance' and 'stopMaintenance' to prevent invalid actions from being performed when not in maintenance mode.
+     * <p>
+     * Is critical to prevent invalid actions from causing unexpected behaviour in the vending machine - such as withdrawing coins while a customer makes an order.
+     * <p>
+     * Purposely called by "!this.inMaintenanceMode" instead of "this.notInMaintenanceMode" for better readability.
+     * @return true if the vending machine is in maintenance mode, false otherwise.
+     */
     private boolean inMaintenanceMode() {
         //* Better readability for method to be called 'inMaintenanceMode', with the logical NOT operator, than 'inNotMaintenanceMode'.
         boolean inMaintenanceMode = this.vendingMachine.getState() == VendingMachineState.MAINTENANCE;
@@ -59,6 +63,15 @@ public class AdminProxy extends Observable implements ActionsAdmin {
         }
         return true;
     }
+
+    /**
+     * Forwarder method calls 'this.vendingMachine.getState'.
+     * Views the current state of the vending machine.
+     * <p>
+     * This is only called by the observers, hence not an implemented action in the 'ActionsAdmin' interface.
+     * @return The current state of the vending machine as a VendingMachineState enum value.
+     */
+    public VendingMachineState getState() { return this.vendingMachine.getState(); }
 
     //: Most important actions - actually starting/stopping maintenance mode.
     /**
@@ -70,7 +83,10 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      * See corresponding superclass's method documentation for more information.
      */
     @Override
-    public void startMaintenance() { this.vendingMachine.changeState(VendingMachineState.MAINTENANCE); }
+    public void startMaintenance() {
+        this.vendingMachine.changeState(VendingMachineState.MAINTENANCE);
+        this.event("Vending machine is now in maintenance mode.");
+    }
     /**
      * Caller method that ends maintenance mode on the vending machine.
      * <p>
@@ -82,21 +98,8 @@ public class AdminProxy extends Observable implements ActionsAdmin {
     @Override
     public void stopMaintenance() {
         this.vendingMachine.changeState(VendingMachineState.IDLE);
+        this.event("Vending machine is now out of maintenance mode.");
     }
-    /**
-     * Getter method for the current state of the vending machine.
-     * <p>
-     * Calls 'this.vendingMachine.getState'
-     * <p>
-     * See corresponding superclass's method documentation for more information.
-     * <p>
-     * Critical for preventing invalid actions from being performed on the vending machine.
-     * @return The current state of the vending machine.
-     */
-    @Override
-    public VendingMachineState getState() {
-        return this.vendingMachine.getState();
-    } //! make private...
 
     //: Relating to coin storage.
     /**
@@ -112,7 +115,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void depositCoins(CoinGBP coin, int amount) {
-        if(this.inMaintenanceMode()) { return; }
+        if (!this.inMaintenanceMode()) return;
 
         this.event(STR."Depositing \{amount} \{coin.toString()}(s)..");
         try {
@@ -141,7 +144,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void withdrawCoins(CoinGBP coin, int amount) {
-        if(this.inMaintenanceMode()) { return; }
+        if (!this.inMaintenanceMode()) return;
 
         this.event(STR."Withdrawing \{amount} \{coin.toString()}(s)..");
         try {
@@ -164,13 +167,11 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      * <p>
      * See corresponding superclass's method documentation for more information.
      * <p>
-     * One of the actions of the coin storage part of the administrative vending machine maintenance tasks.
+     * Not one of the administrative actions but is called per observer display update, hence the MAINTENANCE guard clause is not needed here.
      * @return Map containing each coin denomination (key) and its respective current count (value) in the coin storage.
      */
     @Override
-    public Map<CoinGBP, Integer> viewCoins() {
-        return this.vendingMachine.getCoinStorage();
-    }
+    public Map<CoinGBP, Integer> viewCoins() { return this.vendingMachine.getCoinStorage(); }
 
     //: Relating to item storage.
     /**
@@ -186,7 +187,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void stockItems(int slotNum, int amount) {
-        this.event("attempting to stock " + amount + " items into slot " + slotNum + "...");
+        this.event(STR."attempting to stock \{amount} items into slot \{slotNum}...");
         try {
             for (int i = 0; i < amount; i++) {
                 this.vendingMachine.stockItem(slotNum);
@@ -238,15 +239,13 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      */
     @Override
     public void assignItemSlot(int slotNum, Item item) {
-        this.event(STR."Attempting to assign item \{item.render().get("name")} to slot #\{slotNum}...");
-        try{
-            this.vendingMachine.assignSlot(slotNum, item);
-        }
+        this.event(STR."Attempting to assign item \{item.getName()} to slot #\{slotNum}...");
+        try{ this.vendingMachine.assignSlot(slotNum, item); }
         catch (IllegalArgumentException | IllegalStateException e){
             this.event(e);
             return;
         }
-        this.event(STR."Slot #\{slotNum} assigned to item \{item.render().get("name")} successfully.");
+        this.event(STR."Slot #\{slotNum} assigned to item \{item.getName()} successfully.");
     }
     /**
      * Unassigns a specified slot in the vending machine's item storage.
@@ -261,9 +260,7 @@ public class AdminProxy extends Observable implements ActionsAdmin {
     @Override
     public void unassignItemSlot(int slotNum) {
         this.event(STR."Attempting to unassign item from slot #\{slotNum}...");
-        try{
-            this.vendingMachine.unassignSlot(slotNum);
-        }
+        try{ this.vendingMachine.unassignSlot(slotNum); }
         catch (IllegalArgumentException | IllegalStateException e){
             this.event(e);
             return;
@@ -277,11 +274,9 @@ public class AdminProxy extends Observable implements ActionsAdmin {
      * <p>
      * See corresponding superclass's method documentation for more information.
      * <p>
-     * One of the actions of the item storage part of the administrative vending machine maintenance tasks.
+     * Not one of the administrative actions but is called per observer display update, hence the MAINTENANCE guard clause is not needed here.
      * @return All slot representations in the vending machine's item storage; this includes the empty ones which are represented by 'null'.
      */
     @Override
-    public ItemSlot[] viewItems() {
-        return this.vendingMachine.getItemStorage();
-    }
+    public ItemSlot[] viewItems() { return this.vendingMachine.getItemStorage(); }
 }

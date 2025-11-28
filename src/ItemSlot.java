@@ -25,17 +25,6 @@ public class ItemSlot { //< Composite pattern class.
         //^ Slot must be assigned to an item before it can be populated.
     }
 
-    /*
-
-     * String representation of the specific slot of the vending machine.
-     * @param slotNum The slot number in the vending machine (for identification).
-     *                Class instance does not store its own slot number (the number is the index of 'ItemStorage.ItemSlot[]'), hence it is provided as an argument.
-     * @return String representation including slot number, item details, and current stock.
-
-    public String toString(int slotNum) { return STR."Slot #\{slotNum}\{this.item.toString()}; stock at \{this.itemCount}. "; }
-    //^ Method overloading.
-    */
-
     //: Forwarder methods:
     /**
      * Forwarder method to 'this.item.getPrice' method.
@@ -48,11 +37,6 @@ public class ItemSlot { //< Composite pattern class.
      * @return 'true' if the assigned item's ID matches the provided ID; otherwise 'false'.
      */
     public boolean checkID(int iD){ return this.item.checkID(iD); }
-    /**
-     * Forwarder method to 'this.item.getID' method.
-     * @return The unique identifier of the assigned item.
-     */
-    public int getID(){ return this.item.getID(); }
     /**
      * Getter method for 'this.itemCount'.
      * @return Number of items currently in the slot.
@@ -86,10 +70,10 @@ public class ItemSlot { //< Composite pattern class.
      * Triggered only by an admin/owner stocking the vending machine in MAINTENANCE mode.
      * <p>
      * Not directly relevant to whether the slot is assigned to an item or not.
-     * @throws IllegalArgumentException if the slot is already empty.
+     * @throws IllegalArgumentException if the slot is already full.
      */
     public void addItem(){
-        if (this.itemCount == this.capacity){ throw new IllegalArgumentException("Slot is full"); }
+        if (this.itemCount == this.capacity) throw new IllegalArgumentException("Slot is full");
         this.itemCount++;
     }
     /**
@@ -101,7 +85,7 @@ public class ItemSlot { //< Composite pattern class.
      */
     public void removeItem(){
         //^ Remove the physical item, not the assignment.
-        if (this.itemCount == 0){ throw new IllegalArgumentException("Slot is empty"); }
+        if (this.itemCount == 0) throw new IllegalArgumentException("Slot is empty");
         this.itemCount--;
     }
 
@@ -112,7 +96,7 @@ public class ItemSlot { //< Composite pattern class.
      */
     public Map<String, String> render() {
         //* Expects either a map or null.
-        if (this.item == null){ return null; }
+        if (this.item == null) return null;
         //^ Means slot is unassigned to an item.
         Map<String, String> details = this.item.render();
         details.put("stock", Integer.toString(this.itemCount));

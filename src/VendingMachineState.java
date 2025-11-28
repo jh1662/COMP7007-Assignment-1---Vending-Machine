@@ -12,7 +12,7 @@ public enum VendingMachineState {
     ORDERING, //< One or more items selected - waiting for more items selected or proceed to payment.
     PAYING, //< Order confirmed, now waiting for sufficient funds or cancellation.
     MAINTENANCE, //< Admin/owner only - restocking items or coins, or performing maintenance.
-    //: Transient states.
+    //: Transient states - last for a short period; happens between the stable states.
     DISPENSING, //< Dispensing items.
     REFUNDING, //< Refunding coins.
 

@@ -1,5 +1,3 @@
-import org.jspecify.annotations.NonNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,19 +112,3 @@ public class CoinStorage { //< Composite pattern class - stored in vending machi
         this.coinCounts.put(coin, this.coinCounts.get(coin) - 1);
     }
 }
-
-/* The complex deposit method if 'Map<CoinGBP, Integer> coins' parameter was used instead:
-    public void deposit(Map<CoinGBP, Integer> coins){
-        //* Admin/owner use only.
-        for (Map.Entry<CoinGBP, Integer> coin : coins.entrySet()) {
-            this.checkSupportedCoins(coin.getKey());
-            if( (coin.getValue() + this.coinCounts.get(coin.getKey())) > this.coinMaxes.get(coin.getKey())) {
-                //^ Extra bracket set is not necessary but makes expression more readable.
-                //* Prevents too much coins to be deposited
-                throw new IllegalArgumentException( String.format("Capacity of %s would be exceeded", coin.getKey().toString() ));
-            }
-        }
-        for (Map.Entry<CoinGBP, Integer> coin : coins.entrySet()) { this.deposit(coin.getKey(), coin.getValue()); }
-        //^ Method carrying out the verified operation.
-    }
- */

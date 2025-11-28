@@ -1,5 +1,3 @@
-import java.awt.*;
-
 /**
  * "Composite design pattern" class that represents the item storage of the vending machine.
  * Manages item slots and their operations.
@@ -43,11 +41,9 @@ public class ItemStorage {
     private ItemSlot findSlotByItem(int iD){
         //* Finds appropriate based on item ID and intent to refill or dispense.
         for (ItemSlot slot : this.slots) {
-            if (slot == null){ continue; }
+            if (slot == null) continue;
             //^ No point checking unassigned slots; also avoids null pointer exception ('NullPointerException').
-            if (slot.checkID(iD)){
-                if (!slot.isEmpty()){ return slot; }
-            }
+            if (slot.checkID(iD) && !slot.isEmpty()) return slot;
         }
         return null;
     }
@@ -59,10 +55,10 @@ public class ItemStorage {
      */
     private void dispenseItemBySlotNum(int slotNum){
         //* When machine restock an item (by admin/owner only entered item ID).
-        if (slotNum < 0 || slotNum >= this.slots.length){ throw new IllegalArgumentException("Slot number out of range"); }
+        if (slotNum < 0 || slotNum >= this.slots.length) throw new IllegalArgumentException("Slot number out of range");
         ItemSlot slot = this.slots[slotNum];
-        if (slot == null){ throw new IllegalArgumentException("Cannot remove items from a unassigned slot."); }
-        if (slot.isEmpty()){ throw new IllegalArgumentException("Cannot remove items in an empty slot."); }
+        if (slot == null) throw new IllegalArgumentException("Cannot remove items from a unassigned slot.");
+        if (slot.isEmpty()) throw new IllegalArgumentException("Cannot remove items in an empty slot.");
         slot.removeItem();
     }
 
@@ -96,10 +92,10 @@ public class ItemStorage {
      */
     public void restockItem(int slotNum){
         //* When machine restock an item (by admin/owner only entered item ID).
-        if (slotNum < 0 || slotNum >= this.slots.length){ throw new IllegalArgumentException("Slot number out of range"); }
+        if (slotNum < 0 || slotNum >= this.slots.length) throw new IllegalArgumentException("Slot number out of range");
         ItemSlot slot = this.slots[slotNum];
-        if (slot == null){ throw new IllegalArgumentException("Cannot put items in a unassigned slot."); }
-        if (slot.isFull()){ throw new IllegalArgumentException("Cannot put items in a completely populated slot."); }
+        if (slot == null) throw new IllegalArgumentException("Cannot put items in a unassigned slot.");
+        if (slot.isFull()) throw new IllegalArgumentException("Cannot put items in a completely populated slot.");
         slot.addItem();
     }
     /**
@@ -121,7 +117,7 @@ public class ItemStorage {
         }
         //: When customer buys an item.
         ItemSlot slot = findSlotByItem(identity);
-        if (slot == null){ throw new IllegalArgumentException("Item not found or out of stock."); }
+        if (slot == null) throw new IllegalArgumentException("Item not found or out of stock.");
         slot.removeItem();
     }
 
@@ -133,8 +129,8 @@ public class ItemStorage {
      * @throws IllegalArgumentException If the slot number does not exist in vending machine or if the slot is already assigned.
      */
     public void assignSlot(int slotNum, Item item){
-        if (slotNum < 0 || slotNum >= this.maxSlots){ throw new IllegalArgumentException("Slot number out of range."); }
-        if (this.slots[slotNum] != null){ throw new IllegalArgumentException("Slot already assigned."); }
+        if (slotNum < 0 || slotNum >= this.maxSlots) throw new IllegalArgumentException("Slot number out of range.");
+        if (this.slots[slotNum] != null) throw new IllegalArgumentException("Slot already assigned.");
         this.slots[slotNum] = new ItemSlot(this.maxAmount, item);
     }
     /**
@@ -144,8 +140,8 @@ public class ItemStorage {
      * @throws IllegalArgumentException If the slot number does not exist in vending machine or if the slot is not empty.
      */
     public void unassignSlot(int slotNum){
-        if (slotNum < 0 || slotNum >= this.maxSlots){ throw new IllegalArgumentException("Slot number out of range."); }
-        if (!this.slots[slotNum].isEmpty()){ throw new IllegalArgumentException("Cannot unassign a slot that physically have items inside it."); }
+        if (slotNum < 0 || slotNum >= this.maxSlots) throw new IllegalArgumentException("Slot number out of range.");
+        if (!this.slots[slotNum].isEmpty()) throw new IllegalArgumentException("Cannot unassign a slot that physically have items inside it.");
         this.slots[slotNum] = null;
     }
 }
